@@ -1,0 +1,49 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '2.7.11'
+	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+	//starter 종속성은 별도의 버전관리 필요없음. (스프링 재단에서 알아서 부트 버전이랑 알아서 호환성을 맞춰줌)
+}
+
+group = 'com.encore'
+//빌드된 jar파일에 버전명,
+// jar - 프로그램을 열거나, 커넥터 역할
+version = '0.0.1-SNAPSHOT'
+
+java {
+	sourceCompatibility = '11'
+}
+
+repositories {
+// 중요/ 의존성(라이브러리)을 가져오는 대상 repository(저장소)
+//안중요/ 내부망에 구축되어 있는 프로젝트의 경우 nexus와 라이브러리를 사용하여 내부망 repository사용
+	mavenCentral() // 저장소
+}
+
+
+dependencies { //의존성 - 기능들이 들어있는 클래스를 implement한겨
+//	타임리프(ssr의 백엔드에서 화면 만드는 도구) 관련한 의존성
+//														starter 의존성:  위의 자바 버전에 맞춰서 버전을 맞춰줌
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+//	스프링 mvc(model, view, controller) 구조의 web서비스 관련 의존성
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+//	테스트를 위한 의존성
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+// 	DB연결을 위한 의존성: jdbc, mariaDB 클라이언트
+//	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+	implementation 'org.mariadb.jdbc:mariadb-java-client'
+//	Getter, Setter및 로그관련 의존성
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+//	spring data jpa의존성 추가
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+//	mybatits관련 의존성 추가
+	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.2.0'
+}
+
+tasks.named('test') {
+//	테스트 라이브러리로 주로 JUnit을 사용
+	useJUnitPlatform() //테스트를 하기위한 도구들이 담겨있는 저장소????
+}

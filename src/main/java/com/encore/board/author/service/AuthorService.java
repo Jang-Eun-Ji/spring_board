@@ -7,6 +7,7 @@ import com.encore.board.author.dto.AuthorListResDto;
 import com.encore.board.author.dto.AuthorReqUpdateDto;
 import com.encore.board.author.dto.AuthorSaveReqDto;
 import com.encore.board.author.repository.AuthorRepository;
+import com.encore.board.post.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -21,17 +23,21 @@ import java.util.List;
 public class AuthorService {
     private final AuthorRepository authorRepository;
     @Autowired // 생성자 하나면 자동으로 오토와이어 기능이 붙는디 그냥 써봄
-    public AuthorService(AuthorRepository authorRepository){
+    public AuthorService(AuthorRepository authorRepository, PostRepository postRepository){
         this.authorRepository = authorRepository;
     }
 
-    public void save(AuthorSaveReqDto authorSaveReqDto){
+    public void save(AuthorSaveReqDto authorSaveReqDto) throws IllegalArgumentException{
+        Optional<Author> authors = authorRepository.findByEmail(authorSaveReqDto.getEmail());
+        if (authors.isPresent())throw new IllegalArgumentException("중복이메일");
         Role role = null;
         if (authorSaveReqDto.getRole() == null || authorSaveReqDto.getRole().equals("user")){
             role = Role.USER;
         }else {
             role = Role.ADMIN;
         }
+//        부모테이블을 통해 자식테이블에 객체를 동시에 생성
+
 //        일반생성자 방식
 //        Author author = new Author(authorSaveReqDto.getName(), authorSaveReqDto.getEmail(), authorSaveReqDto.getPassword(), role);
 //        빌터패턴 // 이메일 이름 비번 순서 상관없음
@@ -39,7 +45,16 @@ public class AuthorService {
                 .email(authorSaveReqDto.getEmail())
                 .name(authorSaveReqDto.getName())
                 .password(authorSaveReqDto.getPassword())
+                .role(role)
                 .build();
+//        List<Post> posts  = new ArrayList<>();
+//        Post.builder()
+//                .title("안녕하세요." + author.getName() + " 입니다.")
+//                .contents("cacadetest중입니다.")
+//                .author(author)
+//                .build();
+//        posts.add(post);
+//        author.setPosts(posts);
         authorRepository.save(author);
     }
     public List<AuthorListResDto> findAll(){
@@ -73,10 +88,13 @@ public class AuthorService {
         authorDetailResDto.setPassword(author.getPassword());
         authorDetailResDto.setCreatedTime(author.getCreatedTime());
         authorDetailResDto.setRole(role);
+        authorDetailResDto.setPostCount(author.getPosts().size());
+//        authorDetailResDto.setPostCount(postCount);
+
         return authorDetailResDto;
     }
     public void update(Long id, AuthorReqUpdateDto authorReqUpdateDto) throws EntityNotFoundException {
-        Author author = this.findById(id);
+        Author author = this.findById(id); // this는 AuthorService클래스를 의미
         author.updateAuthor(authorReqUpdateDto.getName(), authorReqUpdateDto.getPassword());
         authorRepository.save(author);
     }

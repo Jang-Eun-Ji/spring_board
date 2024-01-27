@@ -5,9 +5,15 @@ spring:
     username: root
     password: 1234
   jpa:
+    show-sql: true
     database: mysql
     database-platform: org.hibernate.dialect.MariaDBDialect
     generate-ddl: true
+    properties:
+      hibernate:
+        ddl-auto: validate
+        format_sql: true
+        show_sql: true
     hibernate:
-      ddl-auto: update
-    show_sql: true
+      ddl-auto: validate
+#    실행시 마다 밑에 sql문이 보이게 하기

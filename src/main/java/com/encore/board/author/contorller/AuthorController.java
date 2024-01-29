@@ -1,5 +1,6 @@
 package com.encore.board.author.contorller;
 
+import ch.qos.logback.classic.Logger;
 import com.encore.board.author.domain.Author;
 import com.encore.board.author.dto.AuthorDetailResDto;
 import com.encore.board.author.dto.AuthorReqUpdateDto;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class AuthorController {
     private final AuthorService authorService;
+    private Logger log;
+
     @Autowired
     public AuthorController(AuthorService authorService) {
         this.authorService = authorService;
@@ -33,6 +36,7 @@ public class AuthorController {
             return "redirect:/author/list";
         }catch (IllegalArgumentException e){
             model.addAttribute("errorMessage", e.getMessage());
+            log.error(e.getMessage());
             return "redirect:/author/create";
         }
     }

@@ -70,7 +70,7 @@ public class AuthorService {
         return authorLists;
     }
     public Author findById(Long id) throws EntityNotFoundException {
-        Author author = authorRepository.findById(id).orElseThrow(EntityNotFoundException::new);//값이 없으면
+        Author author = authorRepository.findById(id).orElseThrow(()->new EntityNotFoundException("author not found"));//값이 없으면
         return author;
     }
     public AuthorDetailResDto findAuthorDetail(Long id) throws EntityNotFoundException {

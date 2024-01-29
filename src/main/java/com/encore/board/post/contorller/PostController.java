@@ -6,6 +6,7 @@ import com.encore.board.post.dto.PostListResDto;
 import com.encore.board.post.dto.PostReqUpdateDto;
 import com.encore.board.post.dto.PostSaveReqDto;
 import com.encore.board.post.service.PostService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
+@Slf4j
 public class PostController {
     private final PostService postService;
 

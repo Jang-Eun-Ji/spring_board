@@ -9,6 +9,7 @@ import com.encore.board.author.dto.AuthorSaveReqDto;
 import com.encore.board.author.repository.AuthorRepository;
 import com.encore.board.post.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,9 +23,11 @@ import java.util.Optional;
 
 public class AuthorService {
     private final AuthorRepository authorRepository;
+    private final PasswordEncoder passwordEncoder;
     @Autowired // 생성자 하나면 자동으로 오토와이어 기능이 붙는디 그냥 써봄
-    public AuthorService(AuthorRepository authorRepository, PostRepository postRepository){
+    public AuthorService(AuthorRepository authorRepository, PostRepository postRepository, PasswordEncoder passwordEncoder){
         this.authorRepository = authorRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public void save(AuthorSaveReqDto authorSaveReqDto) throws IllegalArgumentException{
@@ -44,7 +47,7 @@ public class AuthorService {
         Author author = Author.builder()
                 .email(authorSaveReqDto.getEmail())
                 .name(authorSaveReqDto.getName())
-                .password(authorSaveReqDto.getPassword())
+                .password(passwordEncoder.encode(authorSaveReqDto.getPassword()))
                 .role(role)
                 .build();
 //        List<Post> posts  = new ArrayList<>();
@@ -71,6 +74,10 @@ public class AuthorService {
     }
     public Author findById(Long id) throws EntityNotFoundException {
         Author author = authorRepository.findById(id).orElseThrow(()->new EntityNotFoundException("author not found"));//값이 없으면
+        return author;
+    }
+    public Author findByEmail(String email) throws EntityNotFoundException {
+        Author author = authorRepository.findByEmail(email).orElseThrow(()->new EntityNotFoundException("author not found"));//값이 없으면
         return author;
     }
     public AuthorDetailResDto findAuthorDetail(Long id) throws EntityNotFoundException {

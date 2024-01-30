@@ -7,6 +7,7 @@ import com.encore.board.author.dto.AuthorReqUpdateDto;
 import com.encore.board.author.dto.AuthorSaveReqDto;
 import com.encore.board.author.service.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,7 +29,10 @@ public class AuthorController {
     public String authorCreate(){
         return "/author/author-create";
     }
-
+    @GetMapping("/author/login-page")
+    public String authorLogin(){
+        return "/author/login-page";
+    }
     @PostMapping("/author/create")
     public String authorSave(Model model, AuthorSaveReqDto authorSaveReqDto){
         try {
@@ -50,7 +54,7 @@ public class AuthorController {
 //            return "redirect:/author/create"; // 오류 시 양식 페이지로 리디렉션
 //        }
 //    }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/author/list")
     public String authorList(Model model){
         model.addAttribute("authorList", authorService.findAll());
@@ -69,6 +73,7 @@ public class AuthorController {
         authorService.update(id, authorReqUpdateDto);
         return "redirect:/author/detail/" + id;
     }
+
     @GetMapping("author/delete/{id}")
     public String authorDelete(@PathVariable Long id){
         authorService.delete(id);

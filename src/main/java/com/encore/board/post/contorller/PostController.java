@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import javax.servlet.http.HttpSession;
+
 @Controller
 @Slf4j
 public class PostController {
@@ -34,9 +36,16 @@ public class PostController {
     }
 
     @PostMapping("/post/create")
-    public String postSave(PostSaveReqDto postSaveReqDto) throws IllegalAccessException {
-        postService.save(postSaveReqDto);
-        return "redirect:/post/list";
+    public String postWrite(Model model, PostSaveReqDto postSaveReqDto, HttpSession httpSession){
+        try {
+            // HttpServletRequest request를 매개변수에 주입한 뒤에
+//            HttpSession session = request.getSession(); 세선걊을 꺼내어 getAttribute("email")
+            postService.save(postSaveReqDto, httpSession.getAttribute("email").toString());
+            return "redirect:/post/list";
+        } catch(IllegalArgumentException e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "post/post-create";
+        }
     }
 
     @PostMapping("/post/{id}/update")
